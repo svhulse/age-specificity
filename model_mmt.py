@@ -4,7 +4,7 @@ from scipy.integrate import solve_ivp
 
 __author__ = 'Samuel Hulse'
 
-class Model:
+class ModelMMT:
 	'''
 	The Model class is used to define a simulation for the QR host-pathogen
 	model. It allows for both density-dependent and frequency-dependent disease
@@ -25,7 +25,7 @@ class Model:
 		self._M[self.N_alleles - 1, self.N_alleles - 2] = mut
 
 		#Set parameters and resistance-cost curve
-		self.beta_j = np.linspace(0, 0.5, self.N_alleles)
+		self.beta_j = np.linspace(0, 0.005, self.N_alleles)
 		self.beta_a = np.linspace(0.5, 0, self.N_alleles)
 
 		#Set default parameters
@@ -47,9 +47,9 @@ class Model:
 
 		N = A + J + np.sum(I)
 		
-		dJ = A*(self.b) - J*(self.mat + self.gamma*N + self.mu + np.dot(self.beta_j, I) / N)
+		dJ = A*(self.b) - J*(self.mat + self.gamma*N + self.mu + np.dot(self.beta_j, I))
 		dA = J*(self.mat) - A*(self.gamma*N + self.mu + np.dot(self.beta_a, I) / N)
-		dI = J*np.multiply(self.beta_j, I)/N + A*np.multiply(self.beta_a, I)/N - I*self.mu
+		dI = J*np.multiply(self.beta_j, I) + A*np.multiply(self.beta_a, I)/N - I*self.mu
 
 		return np.concatenate([[dJ, dA], dI])
 
