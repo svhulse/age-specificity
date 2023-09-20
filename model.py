@@ -65,10 +65,18 @@ class Model:
 		I[50, 0] = 1
 		zero_threshold = 0.01 #Threshold to set abundance values to zero
 
+		#Burn in for t = 5000
+		X_0 = np.concatenate(([J[0], A[0]], I[:, 0]))
+		sol = solve_ivp(self.df, (0, 5000), X_0)
+		
+		J[0] = sol.y[0, -1]
+		A[0] = sol.y[1, -1]
+		I[:, 0] = sol.y[2:, -1]
+
 		for i in range(self.N_iter - 1):
-			X_0 = np.concatenate(([J[i], A[i]], I[:,i]))
+			X = np.concatenate(([J[i], A[i]], I[:,i]))
 				
-			sol = solve_ivp(self.df, t, X_0)
+			sol = solve_ivp(self.df, t, X)
 
 			J[i+1] = sol.y[0, -1]
 			A[i+1] = sol.y[1, -1]
